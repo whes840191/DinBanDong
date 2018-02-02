@@ -1083,11 +1083,10 @@ body {
         //
         var previousStr = lbCurOrderList.innerText.substr(0, mealNameIndex);
         var backStr = lbCurOrderList.innerText.substr(mealCountEnd + 2, lbCurOrderList.innerText.length);
-        var centerStr = lbCurOrderList.innerText.substr(mealNameIndex, mealCountEnd - mealNameIndex);
+        var centerStr = lbCurOrderList.innerText.substr(mealNameIndex, mealCountEnd - mealNameIndex - (mealCountEnd - mealCountStart));
         if (previousStr.length <= 1) previousStr = "";
         if (backStr.length <= 1) backStr = "";
         centerStr = centerStr + mealCount + '\n';
-        alert('preStr: ' + previousStr + 'CenterStr:' + centerStr + 'backStr: ' + backStr);
         lbCurOrderList.innerText = previousStr + centerStr + backStr;
       } else {
         lbCurOrderList.innerText += lbMeal.innerText + '*1\n';
