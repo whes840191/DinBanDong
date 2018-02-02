@@ -367,6 +367,7 @@
       top: 96px;
     }
     .gwd-p-slqg {
+      left: 230px;
       top: 96px;
     }
     .gwd-imagebutton-x50b {
@@ -376,6 +377,7 @@
       top: 96px;
     }
     .gwd-imagebutton-1t81 {
+      left: 230px;
       top: 96px;
     }
     .gwd-imagebutton-4rtl {
@@ -907,6 +909,20 @@
     .gwd-p-1iv2 {
       top: 291px;
     }
+    .gwd-p-1rj3 {
+      left: 228px;
+      top: 186px;
+    }
+    .gwd-imagebutton-19nz {
+      left: 228px;
+      top: 186px;
+    }
+    .gwd-label-xj0c {
+      top: 237px;
+    }
+    .gwd-imagebutton-d2o0 {
+      left: 422px;
+    }
   </style>
 </head>
 
@@ -961,11 +977,11 @@
     };
     gwd.auto_IbUserOrderNextClick = function(event) {
       // GWD Predefined Function
-      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_5', 'fade', 500, 'linear', 'top');
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_5', 'none', 500, 'linear', 'top');
     };
     gwd.auto_IbOrderListNextClick = function(event) {
       // GWD Predefined Function
-      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1', 'fade', 500, 'linear', 'top');
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1', 'none', 500, 'linear', 'top');
     };
     gwd.auto_IbOrderListPrevious_6Click = function(event) {
       // GWD Predefined Function
@@ -1097,7 +1113,41 @@
       dbRef.once("value").then(function(snapshot) {
         var remainedMoney = snapshot.val() - parseInt(lbUserOrderResultTotal.innerText);
         firebase.database().ref('Money/' + name + '/Remain').set(remainedMoney);
+        firebase.database().ref('Order/Date').set('2018/xx/xx');
+        //Add today's order to list for supervisor.
+        var mealListCount = (lbUserOrder1.innerText.match(/\*/g) || []).length;
+        var splitStr = lbUserOrder1.innerText;
+        var curMealName = "";
+        var curMealCount = "";
+        var indexMealStart = 0;
+        var indexMealEnd = 0;
+        for (var i = 0; i < parseInt(mealListCount); i++) {
+          indexMealEnd = splitStr.indexOf('*', indexMealStart);
+          var lineEndIdx = splitStr.indexOf('\n', indexMealStart);
+          curMealName = splitStr.substr(indexMealStart, indexMealEnd - indexMealStart);
+          curMealCount = splitStr.substr(indexMealEnd + 1, lineEndIdx - indexMealEnd - 1);
+          indexMealStart = lineEndIdx + 1;
+          //alert('curMealName:' + curMealName + 'curMealCount:' + curMealCount);
+          firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Count').set(curMealCount);
+          //firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(500);
+        }
+        lbUserOrderResultTotal.innerText = '0';
+        lbUserOrderMealTotal.innerText = '0';
+        lbUserOrder1.innerText = '';
+        lbCurOrderList.innerText = '';
       });
+    };
+    gwd.auto_IbOrderListPrevious_13Click = function(event) {
+      // GWD Predefined Function
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_2', 'fade', 500, 'linear', 'top');
+    };
+    gwd.auto_IbOrderListNext_2Click = function(event) {
+      // GWD Predefined Function
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1', 'fade', 500, 'linear', 'top');
+    };
+    gwd.auto_IbSelectFood3_5Click = function(event) {
+      // GWD Predefined Function
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_13', 'fade', 500, 'linear', 'top');
     };
   </script>
   <script type="text/javascript" gwd-events="registration">
@@ -1138,6 +1188,9 @@
       gwd.actions.events.addHandler('ibUserDeleteOrder1', 'click', gwd.onClickUserDelOrder1, false);
       gwd.actions.events.addHandler('ibUserOrderNext', 'click', gwd.onClickUserOrderFinished, false);
       gwd.actions.events.addHandler('ibOrderListNext', 'click', gwd.onClickUserConfirmOrder, false);
+      gwd.actions.events.addHandler('ibOrderListPrevious_13', 'click', gwd.auto_IbOrderListPrevious_13Click, false);
+      gwd.actions.events.addHandler('ibOrderListNext_2', 'click', gwd.auto_IbOrderListNext_2Click, false);
+      gwd.actions.events.addHandler('ibSelectFood3_5', 'click', gwd.auto_IbSelectFood3_5Click, false);
     };
     gwd.actions.events.deregisterEventHandlers = function(event) {
       gwd.actions.events.removeHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
@@ -1174,6 +1227,9 @@
       gwd.actions.events.removeHandler('ibUserDeleteOrder1', 'click', gwd.onClickUserDelOrder1, false);
       gwd.actions.events.removeHandler('ibUserOrderNext', 'click', gwd.onClickUserOrderFinished, false);
       gwd.actions.events.removeHandler('ibOrderListNext', 'click', gwd.onClickUserConfirmOrder, false);
+      gwd.actions.events.removeHandler('ibOrderListPrevious_13', 'click', gwd.auto_IbOrderListPrevious_13Click, false);
+      gwd.actions.events.removeHandler('ibOrderListNext_2', 'click', gwd.auto_IbOrderListNext_2Click, false);
+      gwd.actions.events.removeHandler('ibSelectFood3_5', 'click', gwd.auto_IbSelectFood3_5Click, false);
     };
     document.addEventListener("DOMContentLoaded", gwd.actions.events.registerEventHandlers);
     document.addEventListener("unload", gwd.actions.events.deregisterEventHandlers);
@@ -1206,7 +1262,7 @@
         <gwd-imagebutton id="ibUserOrderClearAll" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj gwd-imagebutton-eyc5"></gwd-imagebutton>
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-1hqi gwd-p-my07 gwd-p-1k24"><br>
           Food1 &nbsp; &nbsp; &nbsp;&nbsp;</p><span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi">Next</span>
-        <p class="gwd-p-2s6o gwd-gen-10cugwdanimation" id="lbCurOrderList"></p>
+        <label class="gwd-p-2s6o gwd-gen-10cugwdanimation" id="lbCurOrderList"></label>
         <gwd-imagebutton id="ibUserOrderPrevious" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-9yyl"></gwd-imagebutton>
         <gwd-imagebutton id="ibUserOrderNext" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj"></gwd-imagebutton>
         <gwd-imagebutton up-image="assets/meal1.jpg" over-image="assets/meal1.jpg" down-image="assets/meal1.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-1dpp gwd-imagebutton-8sjq gwd-imagebutton-ue25" id="ibSelectMeal1"></gwd-imagebutton>
@@ -1217,7 +1273,7 @@
         <p class="gwd-p-co8m" id="lbUserOrderMeal1">Meal1</p>
         <p class="gwd-p-co8m gwd-p-9u4a gwd-p-48ap" id="lbUserOrderPriceMeal1">$100</p>
         <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw" id="lbUserOrderMeal1_4">total:</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip" id="lbUserOrderMealTotal">0</p>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-label-xj0c" id="lbUserOrderMealTotal">0</label>
         <p class="gwd-p-co8m gwd-p-9u4a gwd-p-1fpk" id="lbUserOrderPriceMeal2">$50</p>
         <p class="gwd-p-ktbw" id="lbUserOrderMeal2">Meal2</p>
       </div>
@@ -1234,8 +1290,8 @@
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
-        <gwd-imagebutton id="ibOrderListNext" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7"></gwd-imagebutton>
-        <p class="gwd-p-1kia" id="lbUserOrder1"></p>
+        <gwd-imagebutton id="ibOrderListNext" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7 gwd-imagebutton-d2o0"></gwd-imagebutton>
+        <label class="gwd-p-1kia" id="lbUserOrder1"></label>
         <gwd-imagebutton id="ibOrderListPrevious_5" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c gwd-imagebutton-2fdr">
           <div>
             <p>Delete</p>
@@ -1261,7 +1317,22 @@
         </gwd-imagebutton>
         <p class="gwd-p-1kia gwd-p-svq7"></p>
         <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbUserOrderResultTotal">0</p>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbUserOrderResultTotal">0</label>
+      </div>
+    </div>
+    <div id="page1_13" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-3g6h" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="SupervisorShowOrderListPage">
+      <div class="gwd-page-content gwd-div-bk2k">
+        <span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2 gwd-span-c9mu">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm">Confirm</span>
+        <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm">Confirm</span>
+        <gwd-imagebutton id="ibOrderListPrevious_13" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc"></gwd-imagebutton>
+        <gwd-imagebutton id="ibOrderListNext_2" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7"></gwd-imagebutton>
+        <p class="gwd-p-1kia" id="lbUserOrder1_1"></p>
+        <p class="gwd-p-1kia gwd-p-sken"></p>
+        <p class="gwd-p-1kia gwd-p-1j6p"></p>
+        <p class="gwd-p-1kia gwd-p-c6j2"></p>
+        <p class="gwd-p-1kia gwd-p-svq7"></p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbShowOrderListTotal">0</p>
       </div>
     </div>
     <div id="page1_1" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-kh6f" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="AdminMainPage">
@@ -1278,6 +1349,9 @@
     </div>
     <div id="page1_2" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-k703" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="SupervisorMainPage">
       <div class="gwd-page-content gwd-div-kr8l">
+        <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-ssuy gwd-p-17s8 gwd-p-1dn7 gwd-p-12bm gwd-p-1rj3"><br>
+          Show Order List</p>
+        <gwd-imagebutton id="ibSelectFood3_5" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-z7t6 gwd-imagebutton-khgy gwd-imagebutton-1r2y gwd-imagebutton-32j7 gwd-imagebutton-19nz"></gwd-imagebutton>
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-1hqi gwd-p-tq8d gwd-p-y1lt"><br>
           Assign Supervisor</p>
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-1hqi gwd-p-my07 gwd-p-1b2l"><br>
