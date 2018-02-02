@@ -545,21 +545,6 @@ body {
     left: 230px;
     top: 140px;
 }
-.gwd-p-1c7v {
-    position: absolute;
-    width: 100px;
-    left: 80px;
-    transform-origin: -205px 159.2px 0px;
-    -webkit-transform-origin: -205px 159.2px 0px;
-    -moz-transform-origin: -205px 159.2px 0px;
-    height: 20px;
-    top: 50px;
-    text-align: right;
-}
-.gwd-p-4fj2 {
-    left: 228px;
-    top: 63px;
-}
 .gwd-imagebutton-h96d {
     left: 303px;
 }
@@ -875,16 +860,12 @@ body {
     top: 23px;
     left: 228px;
 }
-.gwd-p-17e0 {
-    left: 78px;
-    top: 63px;
-}
 .gwd-p-em3n {
     position: absolute;
     height: 20px;
-    left: 15px;
-    top: 290px;
     width: 120px;
+    left: 10px;
+    top: 285px;
 }
 .gwd-p-co8m {
     position: absolute;
@@ -899,8 +880,8 @@ body {
     text-align: center;
     width: 100px;
     height: 20px;
-    left: 228px;
-    top: 94px;
+    left: 227px;
+    top: 96px;
 }
 .gwd-imagebutton-12yj {
     left: 420px;
@@ -909,6 +890,36 @@ body {
 .gwd-imagebutton-9yyl {
     left: 30px;
     top: 350px;
+}
+.gwd-span-1sum {
+    left: 228px;
+    top: 350px;
+}
+.gwd-imagebutton-eyc5 {
+    left: 228px;
+    top: 350px;
+}
+.gwd-input-5rtf {
+    left: 429px;
+    top: 95px;
+}
+.gwd-p-9u4a {
+    top: 119px;
+}
+.gwd-p-1fpk {
+    left: 227px;
+    top: 120px;
+}
+.gwd-p-54ip {
+    left: 420px;
+    top: 237px;
+}
+.gwd-p-vfkw {
+    left: 320px;
+    top: 237px;
+}
+.gwd-p-48ap {
+    top: 119px;
 }</style>
 </head>
 
@@ -1042,6 +1053,7 @@ body {
       gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_12', 'fade', 500, 'linear', 'top');
     };
     gwd.updateUserRemainMoney = function(event) {
+      //We should use a singleton to save these nemes.
       var name = editLoginName.value;
       var dbRef = firebase.database().ref().child('Money/' + name + '/Remain');
       dbRef.on('value', snap => lbUserRemainedMoney.innerText = 'Remained: $' + snap.val());
@@ -1052,9 +1064,45 @@ body {
       //-8 is the string "ibSelect".
       var strLen = strID.length - 8;
       //8 is index, "ibSelect".
-      var lbMealID = 'lbUserOrder' + strID.substr(8, strLen);
-      var lbMeal = document.getElementById(lbMealID);
+      var lbMealID = strID.substr(8, strLen);
+      var lbMeal = document.getElementById('lbUserOrder' + lbMealID);
       lbCurOrderList.innerText += lbMeal.innerText + ', ';
+      //We calculate total money here.
+      //lbUserOrderPriceMeal1
+      var lbPrice = document.getElementById('lbUserOrderPrice' + lbMealID);
+      //-1 is the symbol $.
+      var nPriceLen = lbPrice.innerText.length - 1;
+      var mealPrice = lbPrice.innerText.substr(1, nPriceLen);
+      lbUserOrderMealTotal.innerText = (parseInt(lbUserOrderMealTotal.innerText) + parseInt(mealPrice)).toString();
+    };
+    gwd.onClickUserClearOrder = function(event) {
+      lbCurOrderList.innerText = "";
+    };
+    gwd.onClickUserDelOrder1 = function(event) {
+      lbUserOrder1.innerText = "";
+    };
+    gwd.onClickUserOrderFinished = function(event) {
+      lbUserOrder1.innerText = lbCurOrderList.innerText;
+    };
+    gwd.onClickUserConfirmOrder = function(event) {
+      var name = editLoginName.value;
+      var dbRef = firebase.database().ref('Money/' + name + '/Remain');
+      var remainedMoney = 0;
+      var currentMoney = 0;
+      alert(lbUserOrderMealTotal.innerText);
+      alert(parseInt(lbUserOrderMealTotal.innerText));
+      dbRef.once("value").then(function(snapshot) {
+        //alert(snapshot.val());
+        currentMoney = snapshot.val();
+        //var remainedMoney = snapshot.val() - parseInt(lbUserOrderMealTotal.innerText);
+        //alert(parseInt(remainedMoney));
+      });
+      //alert(currentMoney);
+      /*alert(currentMoney);
+      alert(parseInt(lbUserOrderMealTotal.innerText));
+      remainedMoney = parseInt(currentMoney) - parseInt(lbUserOrderMealTotal.innerText);
+      alert(remainedMoney);
+      firebase.database().ref('Money/' + name + '/Remain').set(remainedMoney);*/
     };
   </script>
   <script type="text/javascript" gwd-events="registration">
@@ -1091,6 +1139,10 @@ body {
       gwd.actions.events.addHandler('ibLoginUser', 'click', gwd.updateUserRemainMoney, false);
       gwd.actions.events.addHandler('ibSelectMeal1', 'click', gwd.userAddMealToOrderList, false);
       gwd.actions.events.addHandler('ibSelectMeal2', 'click', gwd.userAddMealToOrderList, false);
+      gwd.actions.events.addHandler('ibUserOrderClearAll', 'click', gwd.onClickUserClearOrder, false);
+      gwd.actions.events.addHandler('ibUserDeleteOrder1', 'click', gwd.onClickUserDelOrder1, false);
+      gwd.actions.events.addHandler('ibUserOrderNext', 'click', gwd.onClickUserOrderFinished, false);
+      gwd.actions.events.addHandler('ibOrderListNext', 'click', gwd.onClickUserConfirmOrder, false);
     };
     gwd.actions.events.deregisterEventHandlers = function(event) {
       gwd.actions.events.removeHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
@@ -1123,6 +1175,10 @@ body {
       gwd.actions.events.removeHandler('ibLoginUser', 'click', gwd.updateUserRemainMoney, false);
       gwd.actions.events.removeHandler('ibSelectMeal1', 'click', gwd.userAddMealToOrderList, false);
       gwd.actions.events.removeHandler('ibSelectMeal2', 'click', gwd.userAddMealToOrderList, false);
+      gwd.actions.events.removeHandler('ibUserOrderClearAll', 'click', gwd.onClickUserClearOrder, false);
+      gwd.actions.events.removeHandler('ibUserDeleteOrder1', 'click', gwd.onClickUserDelOrder1, false);
+      gwd.actions.events.removeHandler('ibUserOrderNext', 'click', gwd.onClickUserOrderFinished, false);
+      gwd.actions.events.removeHandler('ibOrderListNext', 'click', gwd.onClickUserConfirmOrder, false);
     };
     document.addEventListener("DOMContentLoaded", gwd.actions.events.registerEventHandlers);
     document.addEventListener("unload", gwd.actions.events.deregisterEventHandlers);
@@ -1138,7 +1194,7 @@ body {
         <p class="gwd-p-4y92 gwd-p-1qi1"><br>
           Admin
         </p>
-        <input type="text" name="firstname" value="Dingo" class="gwd-input-s4du" id="editLoginName">
+        <input type="text" name="firstname" value="Dingo" class="gwd-input-s4du gwd-input-5rtf" id="editLoginName">
         <gwd-imagebutton id="ibLoginAdmin" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-lcp0">
         </gwd-imagebutton>
         <gwd-imagebutton id="ibLoginUser" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-z7t6"></gwd-imagebutton>
@@ -1156,37 +1212,37 @@ body {
         <span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2 gwd-span-c9mu">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm">Confirm</span>
         <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm">Confirm</span>
         <gwd-imagebutton id="ibOrderListPrevious" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc"></gwd-imagebutton>
-        <gwd-imagebutton id="ibOrderListPrevious_1" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c">
+        <gwd-imagebutton id="ibUserDeleteOrder1" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c">
           <div>
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
         <gwd-imagebutton id="ibOrderListNext" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7"></gwd-imagebutton>
-        <p class="gwd-p-1kia">Order1</p>
+        <p class="gwd-p-1kia" id="lbUserOrder1"></p>
         <gwd-imagebutton id="ibOrderListPrevious_5" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c gwd-imagebutton-2fdr">
           <div>
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
-        <p class="gwd-p-1kia gwd-p-sken">Order5</p>
+        <p class="gwd-p-1kia gwd-p-sken"></p>
         <gwd-imagebutton id="ibOrderListPrevious_4" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c gwd-imagebutton-1dc8">
           <div>
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
-        <p class="gwd-p-1kia gwd-p-1j6p">Order4</p>
+        <p class="gwd-p-1kia gwd-p-1j6p"></p>
         <gwd-imagebutton id="ibOrderListPrevious_3" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c gwd-imagebutton-1pqv">
           <div>
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
-        <p class="gwd-p-1kia gwd-p-c6j2">Order3</p>
+        <p class="gwd-p-1kia gwd-p-c6j2"></p>
         <gwd-imagebutton id="ibOrderListPrevious_2" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc gwd-imagebutton-162c gwd-imagebutton-dqsr">
           <div>
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
-        <p class="gwd-p-1kia gwd-p-svq7">Order2</p>
+        <p class="gwd-p-1kia gwd-p-svq7"></p>
       </div>
     </div>
     <div id="page1_1" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-kh6f" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="AdminMainPage">
@@ -1269,6 +1325,8 @@ body {
     </div>
     <div id="page1_4" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-1la7" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="UserOrderPage">
       <div class="gwd-page-content gwd-div-1uhs">
+        <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-1sum">Clear All</span>
+        <gwd-imagebutton id="ibUserOrderClearAll" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj gwd-imagebutton-eyc5"></gwd-imagebutton>
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-1hqi gwd-p-my07 gwd-p-1k24"><br>
           Food1 &nbsp; &nbsp; &nbsp;&nbsp;</p><span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi">Next</span>
         <p class="gwd-p-2s6o gwd-gen-10cugwdanimation" id="lbCurOrderList"></p>
@@ -1276,12 +1334,14 @@ body {
         <gwd-imagebutton id="ibUserOrderNext" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj"></gwd-imagebutton>
         <gwd-imagebutton up-image="meal1.jpg" over-image="meal1.jpg" down-image="meal1.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-1dpp gwd-imagebutton-8sjq gwd-imagebutton-ue25" id="ibSelectMeal1"></gwd-imagebutton>
         <gwd-imagebutton id="ibSelectMeal2" up-image="meal2.jpg" over-image="meal2.jpg" down-image="meal2.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-b0zk gwd-imagebutton-14jw gwd-imagebutton-g4ks gwd-imagebutton-1idf"></gwd-imagebutton>
-        <p class="gwd-p-1c7v gwd-p-17e0">$ 100</p>
-        <p class="gwd-p-1c7v gwd-p-4fj2">$ 50</p>
         <p class="gwd-p-em3n" id="lbUserRemainedMoney"><br>
           
         </p>
-        <p class="gwd-p-co8m" id="lbUserOrderMeal1">Meal1</p>
+        <p class="gwd-p-co8m" id="lbUserOrderMeal1">Meal1&nbsp;</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-48ap" id="lbUserOrderPriceMeal1">$100</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw" id="lbUserOrderMeal1_4">total:</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip" id="lbUserOrderMealTotal">0</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-1fpk" id="lbUserOrderPriceMeal2">$50</p>
         <p class="gwd-p-ktbw" id="lbUserOrderMeal2">Meal2</p>
       </div>
     </div>
