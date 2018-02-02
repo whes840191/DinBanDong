@@ -920,6 +920,12 @@ body {
 }
 .gwd-p-48ap {
     top: 119px;
+}
+.gwd-p-m14w {
+    top: 291px;
+}
+.gwd-p-1iv2 {
+    top: 291px;
 }</style>
 </head>
 
@@ -1083,26 +1089,15 @@ body {
     };
     gwd.onClickUserOrderFinished = function(event) {
       lbUserOrder1.innerText = lbCurOrderList.innerText;
+      lbUserOrderResultTotal.innerText = lbUserOrderMealTotal.innerText;
     };
     gwd.onClickUserConfirmOrder = function(event) {
       var name = editLoginName.value;
       var dbRef = firebase.database().ref('Money/' + name + '/Remain');
-      var remainedMoney = 0;
-      var currentMoney = 0;
-      alert(lbUserOrderMealTotal.innerText);
-      alert(parseInt(lbUserOrderMealTotal.innerText));
       dbRef.once("value").then(function(snapshot) {
-        //alert(snapshot.val());
-        currentMoney = snapshot.val();
-        //var remainedMoney = snapshot.val() - parseInt(lbUserOrderMealTotal.innerText);
-        //alert(parseInt(remainedMoney));
+        var remainedMoney = snapshot.val() - parseInt(lbUserOrderResultTotal.innerText);
+        firebase.database().ref('Money/' + name + '/Remain').set(remainedMoney);
       });
-      //alert(currentMoney);
-      /*alert(currentMoney);
-      alert(parseInt(lbUserOrderMealTotal.innerText));
-      remainedMoney = parseInt(currentMoney) - parseInt(lbUserOrderMealTotal.innerText);
-      alert(remainedMoney);
-      firebase.database().ref('Money/' + name + '/Remain').set(remainedMoney);*/
     };
   </script>
   <script type="text/javascript" gwd-events="registration">
@@ -1202,7 +1197,29 @@ body {
           Supervisor
         </p>
         <gwd-imagebutton id="ibLoginSupervisor" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-b0zk gwd-imagebutton-v6gu"></gwd-imagebutton>
-        <p class="gwd-input-z5dy">Name:</p>
+        <label class="gwd-input-z5dy" id="lbUserName">Name:</label>
+      </div>
+    </div>
+    <div id="page1_4" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-1la7" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="UserOrderPage">
+      <div class="gwd-page-content gwd-div-1uhs">
+        <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-1sum">Clear All</span>
+        <gwd-imagebutton id="ibUserOrderClearAll" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj gwd-imagebutton-eyc5"></gwd-imagebutton>
+        <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-1hqi gwd-p-my07 gwd-p-1k24"><br>
+          Food1 &nbsp; &nbsp; &nbsp;&nbsp;</p><span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi">Next</span>
+        <p class="gwd-p-2s6o gwd-gen-10cugwdanimation" id="lbCurOrderList"></p>
+        <gwd-imagebutton id="ibUserOrderPrevious" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-9yyl"></gwd-imagebutton>
+        <gwd-imagebutton id="ibUserOrderNext" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj"></gwd-imagebutton>
+        <gwd-imagebutton up-image="meal1.jpg" over-image="meal1.jpg" down-image="meal1.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-1dpp gwd-imagebutton-8sjq gwd-imagebutton-ue25" id="ibSelectMeal1"></gwd-imagebutton>
+        <gwd-imagebutton id="ibSelectMeal2" up-image="meal2.jpg" over-image="meal2.jpg" down-image="meal2.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-b0zk gwd-imagebutton-14jw gwd-imagebutton-g4ks gwd-imagebutton-1idf"></gwd-imagebutton>
+        <p class="gwd-p-em3n" id="lbUserRemainedMoney"><br>
+          
+        </p>
+        <p class="gwd-p-co8m" id="lbUserOrderMeal1">Meal1</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-48ap" id="lbUserOrderPriceMeal1">$100</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw" id="lbUserOrderMeal1_4">total:</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip" id="lbUserOrderMealTotal">0</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-1fpk" id="lbUserOrderPriceMeal2">$50</p>
+        <p class="gwd-p-ktbw" id="lbUserOrderMeal2">Meal2</p>
       </div>
     </div>
     <div id="page1_5" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-3g6h" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="UserOrderResultPage">
@@ -1243,6 +1260,8 @@ body {
           </div>
         </gwd-imagebutton>
         <p class="gwd-p-1kia gwd-p-svq7"></p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</p>
+        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbUserOrderResultTotal">0</p>
       </div>
     </div>
     <div id="page1_1" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-kh6f" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="AdminMainPage">
@@ -1321,28 +1340,6 @@ body {
         <p class="gwd-p-1kia gwd-p-c6j2 gwd-p-16vj gwd-p-1y5g">Recipe3</p>
         <p class="gwd-p-1kia gwd-p-svq7 gwd-p-k0w2 gwd-p-h5bq">Recipe2</p>
         <p class="gwd-p-hsm9 gwd-p-16nw">Recipe</p>
-      </div>
-    </div>
-    <div id="page1_4" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-1la7" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="UserOrderPage">
-      <div class="gwd-page-content gwd-div-1uhs">
-        <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-1sum">Clear All</span>
-        <gwd-imagebutton id="ibUserOrderClearAll" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj gwd-imagebutton-eyc5"></gwd-imagebutton>
-        <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-1hqi gwd-p-my07 gwd-p-1k24"><br>
-          Food1 &nbsp; &nbsp; &nbsp;&nbsp;</p><span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi">Next</span>
-        <p class="gwd-p-2s6o gwd-gen-10cugwdanimation" id="lbCurOrderList"></p>
-        <gwd-imagebutton id="ibUserOrderPrevious" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-9yyl"></gwd-imagebutton>
-        <gwd-imagebutton id="ibUserOrderNext" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-12yj"></gwd-imagebutton>
-        <gwd-imagebutton up-image="meal1.jpg" over-image="meal1.jpg" down-image="meal1.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-1dpp gwd-imagebutton-8sjq gwd-imagebutton-ue25" id="ibSelectMeal1"></gwd-imagebutton>
-        <gwd-imagebutton id="ibSelectMeal2" up-image="meal2.jpg" over-image="meal2.jpg" down-image="meal2.jpg" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-b0zk gwd-imagebutton-14jw gwd-imagebutton-g4ks gwd-imagebutton-1idf"></gwd-imagebutton>
-        <p class="gwd-p-em3n" id="lbUserRemainedMoney"><br>
-          
-        </p>
-        <p class="gwd-p-co8m" id="lbUserOrderMeal1">Meal1&nbsp;</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-48ap" id="lbUserOrderPriceMeal1">$100</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw" id="lbUserOrderMeal1_4">total:</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip" id="lbUserOrderMealTotal">0</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-1fpk" id="lbUserOrderPriceMeal2">$50</p>
-        <p class="gwd-p-ktbw" id="lbUserOrderMeal2">Meal2</p>
       </div>
     </div>
     <div id="page1_7" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-1la7" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="SupervisorMenuListPage">
