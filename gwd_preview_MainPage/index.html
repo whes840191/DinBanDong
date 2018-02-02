@@ -1072,7 +1072,26 @@ body {
       //8 is index, "ibSelect".
       var lbMealID = strID.substr(8, strLen);
       var lbMeal = document.getElementById('lbUserOrder' + lbMealID);
-      lbCurOrderList.innerText += lbMeal.innerText + ', ';
+      var mealNameIndex = lbCurOrderList.innerText.indexOf(lbMeal.innerText);
+      if (mealNameIndex >= 0) {
+        var mealNameLen = lbMeal.innerText.length;
+        //Get the meal count.
+        var mealCountStart = lbCurOrderList.innerText.indexOf('*', mealNameIndex) + 1;
+        var mealCountEnd = lbCurOrderList.innerText.indexOf('\n', mealNameIndex) - 1;
+        var mealCount = parseInt(lbCurOrderList.innerText.substr(mealCountStart, mealCountEnd - mealCountStart + 1));
+        mealCount++;
+        //
+        var previousStr = lbCurOrderList.innerText.substr(0, mealNameIndex);
+        var backStr = lbCurOrderList.innerText.substr(mealCountEnd + 2, lbCurOrderList.innerText.length);
+        var centerStr = lbCurOrderList.innerText.substr(mealNameIndex, mealCountEnd - mealNameIndex);
+        if (previousStr.length <= 1) previousStr = "";
+        if (backStr.length <= 1) backStr = "";
+        centerStr = centerStr + mealCount + '\n';
+        alert('preStr: ' + previousStr + 'CenterStr:' + centerStr + 'backStr: ' + backStr);
+        lbCurOrderList.innerText = previousStr + centerStr + backStr;
+      } else {
+        lbCurOrderList.innerText += lbMeal.innerText + '*1\n';
+      }
       //We calculate total money here.
       //lbUserOrderPriceMeal1
       var lbPrice = document.getElementById('lbUserOrderPrice' + lbMealID);
