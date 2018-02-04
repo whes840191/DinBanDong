@@ -1149,10 +1149,26 @@
       // GWD Predefined Function
       gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_13', 'fade', 500, 'linear', 'top');
     };
+    gwd.supervisorGetUsersOrderList = function(event) {
+      //Nest loop to search all meal count.
+      firebase.database().ref('Order/OrderList').on('value', function(userListSnap) {
+        //Query all user list.
+        userListSnap.forEach(function(userNameSnap) {
+          firebase.database().ref('Order/OrderList/' + userNameSnap.key).on('value', function(orderListSnap) {
+            //Query all of the list that user ordered.
+            orderListSnap.forEach(function(orderSnap) {
+              firebase.database().ref('Order/OrderList/' + userNameSnap.key + '/' + orderSnap.key + '/Count').on('value', function(mealCountSnap) {
+                alert(userNameSnap.key + ' order ' + mealCountSnap.val() + ' ' + orderSnap.key);
+              });
+            });
+          });
+        });
+      });
+    };
   </script>
   <script type="text/javascript" gwd-events="registration">
-    // Support code for event handling in Google Web Designer
-     // This script block is auto-generated. Please do not edit!
+    // Google Web Designer 中處理事件的支援程式碼
+     // 這個指令碼區塊是自動產生的，請勿編輯！
     gwd.actions.events.registerEventHandlers = function(event) {
       gwd.actions.events.addHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
       gwd.actions.events.addHandler('ibLoginSupervisor', 'click', gwd.auto_TaLoginSupervisorClick, false);
@@ -1191,6 +1207,7 @@
       gwd.actions.events.addHandler('ibOrderListPrevious_13', 'click', gwd.auto_IbOrderListPrevious_13Click, false);
       gwd.actions.events.addHandler('ibOrderListNext_2', 'click', gwd.auto_IbOrderListNext_2Click, false);
       gwd.actions.events.addHandler('ibSelectFood3_5', 'click', gwd.auto_IbSelectFood3_5Click, false);
+      gwd.actions.events.addHandler('ibSelectFood3_5', 'click', gwd.supervisorGetUsersOrderList, false);
     };
     gwd.actions.events.deregisterEventHandlers = function(event) {
       gwd.actions.events.removeHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
@@ -1230,6 +1247,7 @@
       gwd.actions.events.removeHandler('ibOrderListPrevious_13', 'click', gwd.auto_IbOrderListPrevious_13Click, false);
       gwd.actions.events.removeHandler('ibOrderListNext_2', 'click', gwd.auto_IbOrderListNext_2Click, false);
       gwd.actions.events.removeHandler('ibSelectFood3_5', 'click', gwd.auto_IbSelectFood3_5Click, false);
+      gwd.actions.events.removeHandler('ibSelectFood3_5', 'click', gwd.supervisorGetUsersOrderList, false);
     };
     document.addEventListener("DOMContentLoaded", gwd.actions.events.registerEventHandlers);
     document.addEventListener("unload", gwd.actions.events.deregisterEventHandlers);
