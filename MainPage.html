@@ -1058,9 +1058,20 @@
     gwd.updateUserRemainMoney = function(event) {
       //We should use a singleton to save these nemes.
       var name = editLoginName.value;
+      var mealCount = 1;
       var dbRef = firebase.database().ref().child('Money/' + name + '/Remain');
       dbRef.on('value', snap => lbUserRemainedMoney.innerText = 'Remained: $' + snap.val());
-      //firebase.database().ref('Order/OrderList').on('value', function(userListSnap) {});
+      firebase.database().ref('Menus/M1').on('value', function(MenuList) {
+        MenuList.forEach(function(mealName) {
+          firebase.database().ref('Menus/M1/' + mealName.key + '/Price').on('value', function(mealPrice) {
+            var lbMealPrice = document.getElementById('lbUserOrderPriceMeal' + mealCount);
+            var lbMealName = document.getElementById('lbUserOrderMeal' + mealCount);
+            mealCount++;
+            lbMealPrice.innerText = '$' + mealPrice.val();
+            lbMealName.innerText = mealName.key;
+          });
+        });
+      });
     };
     gwd.userAddMealToOrderList = function(event) {
       //We use the id info to get the real meal string.
@@ -1315,12 +1326,12 @@
         <p class="gwd-p-em3n" id="lbUserRemainedMoney"><br>
           
         </p>
-        <p class="gwd-p-co8m" id="lbUserOrderMeal1">Meal1</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-48ap" id="lbUserOrderPriceMeal1">$100</p>
+        <label class="gwd-p-co8m" id="lbUserOrderMeal1"></label>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-48ap" id="lbUserOrderPriceMeal1"></label>
         <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw" id="lbUserOrderMeal1_4">total:</p>
         <label class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-label-xj0c" id="lbUserOrderMealTotal">0</label>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-1fpk" id="lbUserOrderPriceMeal2">$50</p>
-        <p class="gwd-p-ktbw" id="lbUserOrderMeal2">Meal2</p>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-1fpk" id="lbUserOrderPriceMeal2"></label>
+        <label class="gwd-p-ktbw" id="lbUserOrderMeal2"></label>
       </div>
     </div>
     <div id="page1_5" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-3g6h" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="UserOrderResultPage">
