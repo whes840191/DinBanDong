@@ -1079,6 +1079,7 @@ body {
       var name = editLoginName.value;
       var dbRef = firebase.database().ref().child('Money/' + name + '/Remain');
       dbRef.on('value', snap => lbUserRemainedMoney.innerText = 'Remained: $' + snap.val());
+      //firebase.database().ref('Order/OrderList').on('value', function(userListSnap) {});
     };
     gwd.userAddMealToOrderList = function(event) {
       //We use the id info to get the real meal string.
@@ -1088,12 +1089,13 @@ body {
       //8 is index, "ibSelect".
       var lbMealID = strID.substr(8, strLen);
       var lbMeal = document.getElementById('lbUserOrder' + lbMealID);
+      var lbMealPrice = document.getElementById('lbUserOrderPrice' + lbMealID);
       var mealNameIndex = lbCurOrderList.innerText.indexOf(lbMeal.innerText);
       if (mealNameIndex >= 0) {
         var mealNameLen = lbMeal.innerText.length;
         //Get the meal count.
         var mealCountStart = lbCurOrderList.innerText.indexOf('*', mealNameIndex) + 1;
-        var mealCountEnd = lbCurOrderList.innerText.indexOf('\n', mealNameIndex) - 1;
+        var mealCountEnd = lbCurOrderList.innerText.indexOf(',', mealNameIndex) - 1;
         var mealCount = parseInt(lbCurOrderList.innerText.substr(mealCountStart, mealCountEnd - mealCountStart + 1));
         mealCount++;
         //
@@ -1102,10 +1104,10 @@ body {
         var centerStr = lbCurOrderList.innerText.substr(mealNameIndex, mealCountEnd - mealNameIndex - (mealCountEnd - mealCountStart));
         if (previousStr.length <= 1) previousStr = "";
         if (backStr.length <= 1) backStr = "";
-        centerStr = centerStr + mealCount + '\n';
+        centerStr = centerStr + mealCount + ',';
         lbCurOrderList.innerText = previousStr + centerStr + backStr;
       } else {
-        lbCurOrderList.innerText += lbMeal.innerText + '*1\n';
+        lbCurOrderList.innerText += lbMeal.innerText + '(' + lbMealPrice.innerText + ')' + '*1,';
       }
       //We calculate total money here.
       //lbUserOrderPriceMeal1
@@ -1136,19 +1138,23 @@ body {
         //Add today's order to list for supervisor.
         var mealListCount = (lbUserOrder1.innerText.match(/\*/g) || []).length;
         var splitStr = lbUserOrder1.innerText;
-        var curMealName = "";
-        var curMealCount = "";
         var indexMealStart = 0;
         var indexMealEnd = 0;
         for (var i = 0; i < parseInt(mealListCount); i++) {
           indexMealEnd = splitStr.indexOf('*', indexMealStart);
-          var lineEndIdx = splitStr.indexOf('\n', indexMealStart);
-          curMealName = splitStr.substr(indexMealStart, indexMealEnd - indexMealStart);
-          curMealCount = splitStr.substr(indexMealEnd + 1, lineEndIdx - indexMealEnd - 1);
+          var lineEndIdx = splitStr.indexOf(',', indexMealStart);
+          var mealPricePreIdx = splitStr.indexOf('$', indexMealStart);
+          var mealPriceLastIdx = splitStr.indexOf(')', mealPricePreIdx);
+          var curMealPrice = parseInt(splitStr.substr(mealPricePreIdx + 1, mealPriceLastIdx - mealPricePreIdx - 1));
+          var curMealName = splitStr.substr(indexMealStart, indexMealEnd - indexMealStart - mealPriceLastIdx + mealPricePreIdx - 2);
+          var curMealCount = parseInt(splitStr.substr(indexMealEnd + 1, lineEndIdx - indexMealEnd - 1));
           indexMealStart = lineEndIdx + 1;
-          //alert('curMealName:' + curMealName + 'curMealCount:' + curMealCount);
           firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Count').set(curMealCount);
-          //firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(500);
+          firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(curMealPrice * curMealCount);
+          //I don't know why these read data section will be loaded after all of code finished.
+          //firebase.database().ref('Menus/M1/' + curMealName + '/Price').on("value", function(curMealPriceSnap) {
+          //firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(parseInt(curMealPriceSnap.val()) * parseInt(curMealCount));
+          //});
         }
         lbUserOrderResultTotal.innerText = '0';
         lbUserOrderMealTotal.innerText = '0';
@@ -1172,17 +1178,38 @@ body {
       //Nest loop to search all meal count.
       firebase.database().ref('Order/OrderList').on('value', function(userListSnap) {
         //Query all user list.
+        var mealList = [];
         userListSnap.forEach(function(userNameSnap) {
           firebase.database().ref('Order/OrderList/' + userNameSnap.key).on('value', function(orderListSnap) {
             //Query all of the list that user ordered.
             orderListSnap.forEach(function(orderSnap) {
               firebase.database().ref('Order/OrderList/' + userNameSnap.key + '/' + orderSnap.key + '/Count').on('value', function(mealCountSnap) {
-                alert(userNameSnap.key + ' order ' + mealCountSnap.val() + ' ' + orderSnap.key);
+                //alert(userNameSnap.key + ' order ' + mealCountSnap.val() + ' ' + orderSnap.key);
+                //We calculate all of different meal and order counts.
+                var bIsMealAlreadyExisted = false;
+                for (var i = 0; i < mealList.length; i++) {
+                  if (mealList[i]['mealName'] === orderSnap.key) {
+                    mealList[i]['mealCount'] += parseInt(mealCountSnap.val());
+                    bIsMealAlreadyExisted = true;
+                  }
+                }
+                if (!bIsMealAlreadyExisted) mealList.push({
+                  mealName: orderSnap.key,
+                  mealCount: parseInt(mealCountSnap.val())
+                });
               });
             });
           });
         });
+        for (var i = 0; i < mealList.length; i++) {
+          alert('lbSupervisorOrderList' + i.toString());
+          document.getElementById('lbSupervisorOrderList' + i.toString()).textContent = mealList[i]['mealName'] + ' * ' + mealList[i]['mealCount'];
+          alert(mealList[i]['mealName'] + ' ' + mealList[i]['mealCount']);
+        }
       });
+    };
+    gwd.UpdateKeyVal = function(event) {
+      firebase.database().ref('Order/OrderList/Dingo/Meal1/Price').set(0);
     };
   </script>
   <script type="text/javascript" gwd-events="registration">
@@ -1352,8 +1379,8 @@ body {
             <p>Delete</p>
           </div>
         </gwd-imagebutton>
-        <p class="gwd-p-1kia gwd-p-svq7"></p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</p>
+        <label class="gwd-p-1kia gwd-p-svq7"></label>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</label>
         <label class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbUserOrderResultTotal">0</label>
       </div>
     </div>
@@ -1363,13 +1390,13 @@ body {
         <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm">Confirm</span>
         <gwd-imagebutton id="ibOrderListPrevious_13" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc"></gwd-imagebutton>
         <gwd-imagebutton id="ibOrderListNext_2" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7"></gwd-imagebutton>
-        <p class="gwd-p-1kia" id="lbUserOrder1_1"></p>
-        <p class="gwd-p-1kia gwd-p-sken"></p>
-        <p class="gwd-p-1kia gwd-p-1j6p"></p>
-        <p class="gwd-p-1kia gwd-p-c6j2"></p>
-        <p class="gwd-p-1kia gwd-p-svq7"></p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</p>
-        <p class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbShowOrderListTotal">0</p>
+        <label class="gwd-p-1kia" id="lbSupervisorOrderList0"></label>
+        <label class="gwd-p-1kia gwd-p-sken" id="lbSupervisorOrderList4"></label>
+        <label class="gwd-p-1kia gwd-p-1j6p" id="lbSupervisorOrderList3"></label>
+        <label class="gwd-p-1kia gwd-p-c6j2" id="lbSupervisorOrderList2"></label>
+        <label class="gwd-p-1kia gwd-p-svq7" id="lbSupervisorOrderList1"></label>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-vfkw gwd-p-m14w">total:</label>
+        <label class="gwd-p-co8m gwd-p-9u4a gwd-p-54ip gwd-p-1iv2" id="lbShowOrderListTotal">0</label>
       </div>
     </div>
     <div id="page1_1" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-kh6f" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="AdminMainPage">
