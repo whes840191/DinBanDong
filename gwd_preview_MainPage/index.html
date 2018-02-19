@@ -942,6 +942,19 @@ body {
 }
 .gwd-imagebutton-d2o0 {
     left: 422px;
+}
+.gwd-input-1kjx {
+    position: absolute;
+    left: 80px;
+    top: 15px;
+}
+.gwd-span-1kya {
+    left: 80px;
+    top: 47px;
+}
+.gwd-imagebutton-1y3a {
+    left: 80px;
+    top: 47px;
 }</style>
 </head>
 
@@ -1222,6 +1235,11 @@ body {
     gwd.UpdateKeyVal = function(event) {
       firebase.database().ref('Order/OrderList/Dingo/Meal1/Price').set(0);
     };
+    gwd.uploadMenuFile = function(event) {
+      var file = document.getElementById('superUploadMenuBtn').files.item(0);
+      var storageRef = firebase.storage().ref('test/' + file.name);
+      var task = storageRef.put(file);
+    };
   </script>
   <script type="text/javascript" gwd-events="registration">
     // Google Web Designer 中處理事件的支援程式碼
@@ -1265,6 +1283,7 @@ body {
       gwd.actions.events.addHandler('ibOrderListNext_2', 'click', gwd.auto_IbOrderListNext_2Click, false);
       gwd.actions.events.addHandler('ibSelectFood3_5', 'click', gwd.auto_IbSelectFood3_5Click, false);
       gwd.actions.events.addHandler('ibSelectFood3_5', 'click', gwd.supervisorGetUsersOrderList, false);
+      gwd.actions.events.addHandler('ibSupervisorPrevious_1', 'click', gwd.uploadMenuFile, false);
     };
     gwd.actions.events.deregisterEventHandlers = function(event) {
       gwd.actions.events.removeHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
@@ -1305,6 +1324,7 @@ body {
       gwd.actions.events.removeHandler('ibOrderListNext_2', 'click', gwd.auto_IbOrderListNext_2Click, false);
       gwd.actions.events.removeHandler('ibSelectFood3_5', 'click', gwd.auto_IbSelectFood3_5Click, false);
       gwd.actions.events.removeHandler('ibSelectFood3_5', 'click', gwd.supervisorGetUsersOrderList, false);
+      gwd.actions.events.removeHandler('ibSupervisorPrevious_1', 'click', gwd.uploadMenuFile, false);
     };
     document.addEventListener("DOMContentLoaded", gwd.actions.events.registerEventHandlers);
     document.addEventListener("unload", gwd.actions.events.deregisterEventHandlers);
@@ -1424,6 +1444,9 @@ body {
     </div>
     <div id="page1_2" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-k703" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="SupervisorMainPage">
       <div class="gwd-page-content gwd-div-kr8l">
+        <span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2 gwd-span-1kya">Upload</span>
+        <gwd-imagebutton id="ibSupervisorPrevious_1" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-1y3a"></gwd-imagebutton>
+        <input type="file" value="upload" class="gwd-input-1kjx" id="superUploadMenuBtn">
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-ssuy gwd-p-17s8 gwd-p-1dn7 gwd-p-12bm gwd-p-1rj3"><br>
           Show Order List</p>
         <gwd-imagebutton id="ibSelectFood3_5" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-z7t6 gwd-imagebutton-khgy gwd-imagebutton-1r2y gwd-imagebutton-32j7 gwd-imagebutton-19nz"></gwd-imagebutton>
