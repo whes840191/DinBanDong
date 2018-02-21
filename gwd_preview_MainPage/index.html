@@ -959,6 +959,9 @@ body {
     };
     firebase.initializeApp(config);
   </script>
+  <script type="text/javascript" src="html5-qrcode.min.js"></script>
+  <script type="text/javascript" src="jsqrcode-combined.min.js"></script>
+  <script type="text/javascript" src="html5-qrcode.js"></script>
   <script data-source="googbase_min.js" data-version="4" data-exports-type="googbase" src="googbase_min.js"></script>
   <script data-source="gwd_webcomponents_min.js" data-version="5" data-exports-type="gwd_webcomponents" src="gwd_webcomponents_min.js"></script>
   <script data-source="gwdpage_min.js" data-version="11" data-exports-type="gwd-page" src="gwdpage_min.js"></script>
@@ -976,7 +979,7 @@ body {
     };
     gwd.auto_TaLoginUserClick = function(event) {
       // GWD Predefined Function
-      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_4', 'fade', 500, 'linear', 'top');
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1', 'fade', 500, 'linear', 'top');
     };
     gwd.auto_TaUserOrderPreviousClick = function(event) {
       // GWD Predefined Function
@@ -1076,9 +1079,16 @@ body {
     };
     gwd.updateUserRemainMoney = function(event) {
       //We should use a singleton to save these nemes.
-      var name = editLoginName.value;
-      var dbRef = firebase.database().ref().child('Money/' + name + '/Remain');
-      dbRef.on('value', snap => lbUserRemainedMoney.innerText = 'Remained: $' + snap.val());
+      //var name = editLoginName.value;
+      //var dbRef = firebase.database().ref().child('Money/' + name + '/Remain');
+      //dbRef.on('value', snap => lbUserRemainedMoney.innerText = 'Remained: $' + snap.val());
+      html5_qrcode(function(data) {
+        alert("do something when code is read");
+      }, function(error) {
+        alert("show read errors");
+      }, function(videoError) {
+        alert("the video stream could be opened");
+      });
     };
     gwd.userAddMealToOrderList = function(event) {
       //We use the id info to get the real meal string.
@@ -1186,8 +1196,8 @@ body {
     };
   </script>
   <script type="text/javascript" gwd-events="registration">
-    // Google Web Designer 中處理事件的支援程式碼
-     // 這個指令碼區塊是自動產生的，請勿編輯！
+    // Support code for event handling in Google Web Designer
+     // This script block is auto-generated. Please do not edit!
     gwd.actions.events.registerEventHandlers = function(event) {
       gwd.actions.events.addHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
       gwd.actions.events.addHandler('ibLoginSupervisor', 'click', gwd.auto_TaLoginSupervisorClick, false);
@@ -1279,6 +1289,20 @@ body {
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-rrk6 gwd-p-16eh"><br>
           User
         </p>
+        <div id="reader" style="width:300px;height:250px">
+          <script>
+            html5_qrcode(function(data) {
+                alert("do something when code is read");
+              },
+              function(error) {
+                alert("show read errors");
+              },
+              function(videoError) {
+                alert("the video stream could be opened");
+              }
+            );
+          </script>
+        </div>
         <p class="gwd-p-4y92 gwd-p-1qi1"><br>
           Admin
         </p>
