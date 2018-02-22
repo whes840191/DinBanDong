@@ -936,6 +936,14 @@
       left: 80px;
       top: 47px;
     }
+    .gwd-p-cmme {
+      position: absolute;
+      width: 168px;
+      height: 49px;
+      left: 294px;
+      top: 301px;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -970,7 +978,7 @@
     };
     gwd.auto_TaLoginUserClick = function(event) {
       // GWD Predefined Function
-      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_4', 'fade', 500, 'linear', 'top');
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1', 'fade', 500, 'linear', 'top');
     };
     gwd.auto_TaUserOrderPreviousClick = function(event) {
       // GWD Predefined Function
@@ -1070,7 +1078,7 @@
     };
     gwd.updateUserRemainMoney = function(event) {
       //We should use a singleton to save these nemes.
-      var name = editLoginName.value;
+      /*var name = editLoginName.value;
       var mealCount = 1;
       var dbRef = firebase.database().ref().child('Money/' + name + '/Remain');
       dbRef.on('value', snap => lbUserRemainedMoney.innerText = 'Remained: $' + snap.val());
@@ -1084,7 +1092,17 @@
             lbMealName.innerText = mealName.key;
           });
         });
-      });
+      });*/
+      button = document.createElement("BUTTON");
+      buttonText = document.createTextNode("Edit");
+      button.setAttribute("name", 'test');
+      button.appendChild(buttonText);
+      button.type = "button";
+      button.onclick = function() {
+        alert('clicked');
+      };
+      var foo = document.getElementById("test");
+      foo.appendChild(button);
     };
     gwd.userAddMealToOrderList = function(event) {
       //We use the id info to get the real meal string.
@@ -1135,6 +1153,8 @@
     };
     gwd.onClickUserConfirmOrder = function(event) {
       var name = editLoginName.value;
+      var mealNameList = [];
+      var mealCountList = [];
       var dbRef = firebase.database().ref('Money/' + name + '/Remain');
       dbRef.once("value").then(function(snapshot) {
         var remainedMoney = snapshot.val() - parseInt(lbUserOrderResultTotal.innerText);
@@ -1154,12 +1174,21 @@
           var curMealName = splitStr.substr(indexMealStart, indexMealEnd - indexMealStart - mealPriceLastIdx + mealPricePreIdx - 2);
           var curMealCount = parseInt(splitStr.substr(indexMealEnd + 1, lineEndIdx - indexMealEnd - 1));
           indexMealStart = lineEndIdx + 1;
-          firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Count').set(curMealCount);
-          firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(curMealPrice * curMealCount);
+          mealNameList.push(curMealName);
+          mealCountList.push(curMealCount);
+          //firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Count').set(curMealCount);
+          //firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(curMealPrice * curMealCount);
           //I don't know why these read data section will be loaded after all of code finished.
           //firebase.database().ref('Menus/M1/' + curMealName + '/Price').on("value", function(curMealPriceSnap) {
           //firebase.database().ref('Order/OrderList/' + name + '/' + curMealName + '/Price').set(parseInt(curMealPriceSnap.val()) * parseInt(curMealCount));
           //});
+        }
+      }).then(function() {
+        for (var i = 0; i < mealNameList.length; i++) {
+          firebase.database().ref('Menus/M1/' + mealNameList[i] + '/Price').on("value", function(curMealPriceSnap) {
+            firebase.database().ref('Order/OrderList/' + name + '/' + mealNameList[i] + '/Count').set(mealCountList[i]);
+            firebase.database().ref('Order/OrderList/' + name + '/' + mealNameList[i] + '/Price').set(parseInt(curMealPriceSnap.val()) * parseInt(mealCountList[i]));
+          });
         }
         lbUserOrderResultTotal.innerText = '0';
         lbUserOrderMealTotal.innerText = '0';
@@ -1318,18 +1347,21 @@
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-rrk6 gwd-p-16eh"><br>
           User
         </p>
+        <gwd-imagebutton id="ibLoginUser" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-z7t6"></gwd-imagebutton>
         <p class="gwd-p-4y92 gwd-p-1qi1"><br>
           Admin
         </p>
         <input type="text" name="firstname" value="Dingo" class="gwd-input-s4du gwd-input-5rtf" id="editLoginName">
         <gwd-imagebutton id="ibLoginAdmin" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-lcp0">
         </gwd-imagebutton>
-        <gwd-imagebutton id="ibLoginUser" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-z7t6"></gwd-imagebutton>
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-rrk6"><br>
           Supervisor
         </p>
         <gwd-imagebutton id="ibLoginSupervisor" up-image="assets/btnNormal.png" over-image="assets/btnHover.png" down-image="assets/btnPressed.png" scaling="cover" class="gwd-imagebutton-dqjr gwd-imagebutton-b0zk gwd-imagebutton-v6gu"></gwd-imagebutton>
         <label class="gwd-input-z5dy" id="lbUserName">Name:</label>
+        <p class="gwd-p-cmme" id="test"><br>
+          
+        </p>
       </div>
     </div>
     <div id="page1_4" is="gwd-page" class="gwd-page-wrapper gwd-lightbox gwd-div-1la7" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="UserOrderPage">
