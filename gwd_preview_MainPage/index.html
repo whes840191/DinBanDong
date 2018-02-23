@@ -974,11 +974,11 @@ body {
 }
 .gwd-span-rup8 {
     left: 420px;
-    top: 37px;
+    top: 154px;
 }
 .gwd-imagebutton-1630 {
     left: 420px;
-    top: 37px;
+    top: 154px;
 }
 .gwd-imagebutton-1hs0 {
     left: 420px;
@@ -988,8 +988,8 @@ body {
     position: absolute;
     width: 200px;
     height: 100px;
-    top: 43px;
     left: 17px;
+    top: 150px;
 }
 .gwd-input-1o37 {
     left: 274px;
@@ -1009,6 +1009,22 @@ body {
 .gwd-imagebutton-dbt8 {
     left: 315px;
     top: 46px;
+}
+.gwd-input-19i8 {
+    left: 26px;
+    top: 19px;
+}
+.gwd-input-wddd {
+    left: 266px;
+    top: 154px;
+}
+.gwd-input-1jda {
+    left: 164px;
+    top: 19px;
+}
+.gwd-input-1tq4 {
+    left: 267px;
+    top: 200px;
 }</style>
 </head>
 
@@ -1322,7 +1338,9 @@ body {
           return;
         }
       }
-      superCreateMealList.options[superCreateMealList.length] = new Option(superNewMealName.value, superCreateMealList.length)
+      var file = document.getElementById('superSelectMealImgBtn').files.item(0);
+      alert(file.name);
+      superCreateMealList.options[superCreateMealList.length] = new Option(superNewMealName.value, file.name);
     };
     gwd.auto_IbOrderListPrevious_14Click = function(event) {
       // GWD Predefined Function
@@ -1440,7 +1458,7 @@ body {
   </script>
   <script data-source="gwdimage_min.js" data-version="10" data-exports-type="gwd-image" src="gwdimage_min.js"></script>
   <script data-source="gwdimagebutton_min.js" data-version="9" data-exports-type="gwd-imagebutton" src="gwdimagebutton_min.js"></script>
-  <div is="gwd-pagedeck" class="gwd-page-container" id="pagedeck" data-gwd-offset-top="0px" data-gwd-offset-left="0px" default-page="page1_2">
+  <div is="gwd-pagedeck" class="gwd-page-container" id="pagedeck" data-gwd-offset-top="0px" data-gwd-offset-left="0px" default-page="page1_14">
     <div is="gwd-page" id="page1" class="gwd-page-wrapper page1-content gwd-lightbox gwd-div-br8t" data-gwd-width="550px" data-gwd-height="400px" data-gwd-name="LoginPage">
       <div class="gwd-page-content page1-content gwd-div-7jac">
         <p class="gwd-p-4y92 gwd-p-1qi1 gwd-p-rrk6 gwd-p-16eh"><br>
@@ -1546,7 +1564,10 @@ body {
       <div class="gwd-page-content gwd-div-bk2k">
         <span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm gwd-span-rup8">Add</span>
         <select name="interest" size="7" class="gwd-select-1756" id="superCreateMealList"></select>
-        <input type="text" name="firstname" value="MealName" class="gwd-input-s4du gwd-input-5rtf gwd-input-1o37" id="superNewMealName">
+        <input type="text" name="firstname" value="MealName" class="gwd-input-s4du gwd-input-5rtf gwd-input-1o37 gwd-input-wddd" id="superNewMealName">
+        <input type="text" name="firstname" value="MenuName" class="gwd-input-s4du gwd-input-5rtf gwd-input-1o37 gwd-input-19i8" id="superNewMenuName">
+        <input type="file" value="upload" class="gwd-input-1kjx gwd-input-1jda" id="superSelectMenuImgBtn">
+        <input type="file" value="upload" class="gwd-input-1kjx gwd-input-1jda gwd-input-1tq4" id="superSelectMealImgBtn">
         <gwd-imagebutton id="ibOrderListNext_4" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7 gwd-imagebutton-1630"></gwd-imagebutton><span class="gwd-span-vwfm gwd-span-1ne6 gwd-span-1847 gwd-span-48x2 gwd-span-c9mu">Previous</span><span class="gwd-span-vwfm gwd-span-1f2j gwd-span-1ilr gwd-span-1idi gwd-span-krfm">Confirm</span>
         <gwd-imagebutton id="ibOrderListPrevious_14" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-mnxx gwd-imagebutton-lldc"></gwd-imagebutton>
         <gwd-imagebutton id="ibOrderListNext_3" up-image="btnNormal.png" over-image="btnHover.png" down-image="btnPressed.png" scaling="cover" class="gwd-imagebutton-1j1a gwd-imagebutton-tojo gwd-imagebutton-mey7 gwd-imagebutton-1hs0"></gwd-imagebutton>
