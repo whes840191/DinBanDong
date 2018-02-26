@@ -1320,10 +1320,16 @@
         }
       }
       var selectMealBtn = document.getElementById('superSelectMealImgBtn');
-      var file = selectMealBtn.files.item(0);
-      superCreateMealList.options[superCreateMealList.length] = new Option(superNewMealName.value, file);
-      //We need to clear these files.
-      //selectMealBtn.
+      //If user select a image for the meal,
+      //then we will upload it to storage.
+      if (selectMealBtn.value != "") {
+        var file = selectMealBtn.files.item(0);
+        superCreateMealList.options[superCreateMealList.length] = new Option(superNewMealName.value, file);
+        selectMealBtn.value = "";
+        alert(file.name);
+      } else {
+        superCreateMealList.options[superCreateMealList.length] = new Option(superNewMealName.value, "");
+      }
     };
     gwd.auto_IbOrderListPrevious_14Click = function(event) {
       // GWD Predefined Function
@@ -1331,7 +1337,7 @@
     };
     gwd.auto_IbOrderListNext_3Click = function(event) {
       // GWD Predefined Function
-      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1', 'fade', 500, 'linear', 'top');
+      gwd.actions.gwdPagedeck.goToPage('pagedeck', 'page1_14', 'fade', 500, 'linear', 'top');
     };
     gwd.loadFBStorageImg = function(event) {
       var storageRef = firebase.storage().ref('test/download.jpg');
@@ -1342,10 +1348,23 @@
         alert('Load failed');
       });
     };
+    gwd.superOnConfirmNewMenu = function(event) {
+      var selectMealBtn = document.getElementById('superSelectMealImgBtn');
+      var selectMenuBtn = document.getElementById('superSelectMenuImgBtn');
+      if (selectMenuBtn.value == "" || superCreateMealList.length <= 0) {
+        alert("Please select the menu file or add meal to list.");
+      } else {
+        //We need to check if there is a same menu name is existed in the storage.
+        var menuFile = selectMenuBtn.files.item(0);
+        var fileExt = menuFile.name.split('.').pop();
+        var storageRef = firebase.storage().ref(superNewMenuName.value + '/MenuName.' + fileExt);
+        var task = storageRef.put(menuFile);
+      }
+    };
   </script>
   <script type="text/javascript" gwd-events="registration">
-    // Support code for event handling in Google Web Designer
-     // This script block is auto-generated. Please do not edit!
+    // Google Web Designer 中處理事件的支援程式碼
+     // 這個指令碼區塊是自動產生的，請勿編輯！
     gwd.actions.events.registerEventHandlers = function(event) {
       gwd.actions.events.addHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
       gwd.actions.events.addHandler('ibLoginSupervisor', 'click', gwd.auto_TaLoginSupervisorClick, false);
@@ -1390,6 +1409,7 @@
       gwd.actions.events.addHandler('ibOrderListNext_3', 'click', gwd.auto_IbOrderListNext_3Click, false);
       gwd.actions.events.addHandler('ibOrderListNext_4', 'click', gwd.testFunction, false);
       gwd.actions.events.addHandler('ibSupervisorPrevious_2', 'click', gwd.loadFBStorageImg, false);
+      gwd.actions.events.addHandler('ibOrderListNext_3', 'click', gwd.superOnConfirmNewMenu, false);
     };
     gwd.actions.events.deregisterEventHandlers = function(event) {
       gwd.actions.events.removeHandler('ibLoginAdmin', 'click', gwd.auto_TaLoginAdminClick, false);
@@ -1435,6 +1455,7 @@
       gwd.actions.events.removeHandler('ibOrderListNext_3', 'click', gwd.auto_IbOrderListNext_3Click, false);
       gwd.actions.events.removeHandler('ibOrderListNext_4', 'click', gwd.testFunction, false);
       gwd.actions.events.removeHandler('ibSupervisorPrevious_2', 'click', gwd.loadFBStorageImg, false);
+      gwd.actions.events.removeHandler('ibOrderListNext_3', 'click', gwd.superOnConfirmNewMenu, false);
     };
     document.addEventListener("DOMContentLoaded", gwd.actions.events.registerEventHandlers);
     document.addEventListener("unload", gwd.actions.events.deregisterEventHandlers);
